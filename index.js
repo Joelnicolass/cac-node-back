@@ -1,6 +1,6 @@
 const express = require("express");
-const cors = require("cors");
 const userModel = require("./model/user.model");
+const cors = require("cors");
 
 const app = express();
 const port = 5000;
@@ -10,22 +10,33 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// routes
+app.get("/user", (req, res) => {
+  const users = userModel.getAllUsers();
+
+  res.status(200).json(users);
+  return;
+});
+
 app.post("/user", (req, res) => {
+  /* const name = req.body.name;
+  const password = req.body.password; */
+
   const user = req.body;
 
   const newUser = userModel.create(user);
 
   if (newUser) {
-    res.status(200).json({
-      message: "User created",
+    res.status(201).json({
+      name: user.name,
     });
+    return;
+  } else {
+    res.status(500).json({
+      message: "Error while creating user",
+    });
+    return;
   }
-});
-
-app.get("/user", (req, res) => {
-  const users = userModel.getAllUsers();
-
-  res.status(200).json(users);
 });
 
 app.listen(port, () =>
