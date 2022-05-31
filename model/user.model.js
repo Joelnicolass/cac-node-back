@@ -21,6 +21,10 @@ const userModel = {
     const users = database.users;
     return users;
   },
+  getUserByEmail: (email) => {
+    const user = database.users.find((user) => user.email === email);
+    return user;
+  },
 };
 
 module.exports = userModel;
