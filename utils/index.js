@@ -6,8 +6,8 @@ module.exports = {
     const salt = await bcrypt.genSalt(10);
     return await bcrypt.hash(data, salt);
   },
-  compare: async (data, hash) => {
-    return await bcrypt.compare(data, hash);
+  compare: async (data, encrypted) => {
+    return await bcrypt.compare(data, encrypted);
   },
   tokenValidator: (req, res, next) => {
     const token = req.headers["auth"];
@@ -16,6 +16,7 @@ module.exports = {
       res.status(401).json({
         msg: "No token provided",
       });
+
       return;
     }
 
@@ -37,4 +38,3 @@ module.exports = {
 
 // token = req.headers["auth"];
 // jwt.verify(token, "SECRET")
-// jwt.sign({}, "SECRET")

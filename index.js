@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const userModel = require("./model/user.model");
-const { compare, encrypt, tokenValidator } = require("./utils/index");
+const middleTest = require("./middleware/index");
+const { tokenValidator, compare, encrypt } = require("./utils");
 const jwt = require("jsonwebtoken");
 
 const app = express();
@@ -12,97 +13,62 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.post("/login", async (req, res) => {
-  if (!req.body.email || !req.body.password) {
-    res.status(400).json({
-      msg: "Email and password are required",
+app.post("/register", async (req, res) => {
+  // const email = req.body.email;
+  // const password = req.body.password;
+  const { email, password } = req.body;
+
+  // validaciones
+  if (!email || !password) {
+    res.status(500).json({
+      message: "Email and password are required",
     });
 
     return;
   }
 
-  const user = userModel.getUserByEmail(req.body.email);
+  const existEmail = userModel.getUserByEmail(email);
 
-  if (!user) {
-    res.status(400).json({
-      msg: "User not found",
+  if (existEmail) {
+    res.status(500).json({
+      message: "Email already exist",
     });
 
     return;
   }
 
-  const isPasswordValid = await compare(req.body.password, user.password);
+  const encrypted = await encrypt(password);
+  console.log(encrypted);
 
-  if (!isPasswordValid) {
-    res.status(400).json({
-      msg: "Invalid password",
-    });
+  const newUser = {
+    id: Date.now(),
+    email,
+    password: encrypted,
+  };
 
-    return;
-  }
+  userModel.create(newUser);
 
-  const token = jwt.sign(
-    { id: user.id, msg: "hola, soy un mensaje oculto en jwt" },
-    "SECRET"
-  );
-
-  res.status(200).json({
-    token,
+  res.status(201).json({
+    msg: "ok",
   });
 
   return;
 });
 
-app.post("/register", async (req, res) => {
-  if (!req.body.email || !req.body.password) {
-    res.status(400).json({
-      message: "Missing required fields",
-    });
-
-    return;
-  }
-
-  const userExist = userModel.getUserByEmail(req.body.email);
-
-  if (userExist) {
-    res.status(400).json({
-      message: "User already exist",
-    });
-
-    return;
-  }
-
-  const newUser = {
-    id: Date.now(),
-    email: req.body.email,
-    password: await encrypt(req.body.password),
-  };
-
-  const user = userModel.create(newUser);
-
-  if (user) {
-    res.status(200).json({
-      message: "User created",
-    });
-
-    return;
-  } else {
-    res.status(400).json({
-      message: "User not created",
-    });
-
-    return;
-  }
+app.post("/login", async (req, res) => {
+  // const token = jwt.sign({user}, 'SECRET');
 });
 
 app.get("/users", tokenValidator, (req, res) => {
   const users = userModel.getAllUsers();
 
-  res.status(200).json({
-    users,
-  });
+  res.status(200).json(users);
+});
 
-  return;
+app.get("/users/:id", (req, res) => {
+  const id = req.params.id;
+  const user = userModel.findById(id);
+  res.status(200).json(user);
 });
 
 app.listen(port, () =>
