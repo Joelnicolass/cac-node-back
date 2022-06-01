@@ -1,15 +1,14 @@
-const middleTest = (req, res, next) => {
+const middlewareTest = (req, res, next) => {
   const email = req.body.email;
 
   if (!email) {
-    res.status(500).json({
+    res.status(400).send({
       message: "Email is required",
     });
-
     return;
   }
 
   next();
 };
 
-module.exports = middleTest;
+module.exports = middlewareTest;

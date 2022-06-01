@@ -2,21 +2,20 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 module.exports = {
-  encrypt: async (data) => {
+  encrypt: async (password) => {
     const salt = await bcrypt.genSalt(10);
-    return await bcrypt.hash(data, salt);
+    return await bcrypt.hash(password, salt);
   },
-  compare: async (data, encrypted) => {
-    return await bcrypt.compare(data, encrypted);
+  compare: async (password, encrypted) => {
+    return await bcrypt.compare(password, encrypted);
   },
   tokenValidator: (req, res, next) => {
     const token = req.headers["auth"];
 
     if (!token) {
       res.status(401).json({
-        msg: "No token provided",
+        message: "Access denied",
       });
-
       return;
     }
 
@@ -24,11 +23,15 @@ module.exports = {
       const verified = jwt.verify(token, "SECRET");
     } catch (error) {
       res.status(401).json({
-        msg: "Invalid token",
+        message: "Error",
       });
       return;
     }
+
     next();
+  },
+  generateToken: async (data = {}) => {
+    return await jwt.sign({ data }, "SECRET");
   },
 };
 
@@ -38,3 +41,4 @@ module.exports = {
 
 // token = req.headers["auth"];
 // jwt.verify(token, "SECRET")
+// jwt.sign({user}, 'SECRET')

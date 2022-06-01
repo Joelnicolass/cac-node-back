@@ -1,9 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const userModel = require("./model/user.model");
-const middleTest = require("./middleware/index");
-const { tokenValidator, compare, encrypt } = require("./utils");
-const jwt = require("jsonwebtoken");
+const middlewareTest = require("./middlewares/index");
+const { tokenValidator, generateToken, encrypt } = require("./utils");
+const userModel = require("./models/user.model");
+const { compare } = require("bcrypt");
 
 const app = express();
 const port = 5000;
@@ -14,62 +14,115 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.post("/register", async (req, res) => {
-  // const email = req.body.email;
-  // const password = req.body.password;
+  // validar email, password
+
   const { email, password } = req.body;
 
-  // validaciones
   if (!email || !password) {
-    res.status(500).json({
+    res.status(400).json({
       message: "Email and password are required",
     });
-
     return;
   }
 
-  const existEmail = userModel.getUserByEmail(email);
+  // consultar si existe el email
 
-  if (existEmail) {
-    res.status(500).json({
-      message: "Email already exist",
+  const emailExists = userModel.getUserByEmail(email);
+  if (emailExists) {
+    res.status(400).json({
+      message: "Email already exists",
     });
-
     return;
   }
 
-  const encrypted = await encrypt(password);
-  console.log(encrypted);
+  // encriptar password
 
+  const passEncrypted = await encrypt(password);
+
+  // crear un usuario
   const newUser = {
     id: Date.now(),
     email,
-    password: encrypted,
+    password: passEncrypted,
   };
 
-  userModel.create(newUser);
+  // guardar en la base de datos
+
+  const userCreated = userModel.create(newUser);
 
   res.status(201).json({
-    msg: "ok",
+    message: "User created",
   });
-
   return;
 });
 
 app.post("/login", async (req, res) => {
-  // const token = jwt.sign({user}, 'SECRET');
+  // validar email, password
+
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400).json({
+      message: "Email and password are required",
+    });
+    return;
+  }
+
+  // validar si existe el usuario
+
+  const user = userModel.getUserByEmail(email);
+  if (!user) {
+    res.status(400).json({
+      message: "Invalid Email or Password",
+    });
+    return;
+  }
+
+  // comparar password
+
+  const passIsValid = await compare(password, user.password);
+
+  if (!passIsValid) {
+    res.status(400).json({
+      message: "Invalid Email or Password",
+    });
+    return;
+  }
+
+  // validar usuario
+
+  if (email !== user.email) {
+    res.status(400).json({
+      message: "Invalid Email or Password",
+    });
+    return;
+  }
+
+  // crear token
+  const token = await generateToken({
+    id: user.id,
+    email: user.email,
+  });
+
+  // enviar datos
+
+  res.status(200).json({
+    message: "Login Successful",
+    token,
+  });
+  return;
 });
 
 app.get("/users", tokenValidator, (req, res) => {
   const users = userModel.getAllUsers();
-
-  res.status(200).json(users);
+  res.status(200).json({
+    message: "Users",
+    users,
+  });
+  return;
 });
 
-app.get("/users/:id", (req, res) => {
-  const id = req.params.id;
-  const user = userModel.findById(id);
-  res.status(200).json(user);
-});
+//app.get("/users/:id");
 
 app.listen(port, () =>
   console.log("> Server is up and running on port : " + port)

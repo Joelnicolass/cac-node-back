@@ -1,4 +1,4 @@
-const database = require("../storage/index");
+const database = require("../storages/index");
 
 const userModel = {
   create: (user) => {
