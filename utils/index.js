@@ -23,7 +23,7 @@ module.exports = {
       const verified = jwt.verify(token, "SECRET");
     } catch (error) {
       res.status(401).json({
-        message: "Error",
+        message: "Invalid Token",
       });
       return;
     }
@@ -31,7 +31,7 @@ module.exports = {
     next();
   },
   generateToken: async (data = {}) => {
-    return await jwt.sign({ data }, "SECRET");
+    return await jwt.sign({ data }, "SECRET", { expiresIn: 60 });
   },
 };
 
@@ -41,4 +41,4 @@ module.exports = {
 
 // token = req.headers["auth"];
 // jwt.verify(token, "SECRET")
-// jwt.sign({user}, 'SECRET')
+// jwt.sign({}, 'SECRET', {})
