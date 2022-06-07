@@ -1,10 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const middlewareTest = require("./middlewares/index");
-const { tokenValidator, generateToken, encrypt, compare } = require("./utils");
-const userModel = require("./models/user.model");
+const { tokenValidator } = require("./utils");
 const authRoutes = require("./routes/auth.routes");
-const userRoutes = require("./routes/user.routes");
+const privateRoutes = require("./routes/private.routes");
+
+require("./storages/connection");
 
 const app = express();
 const port = 5000;
@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/auth", authRoutes);
-app.use("/user", tokenValidator, userRoutes);
+app.use(privateRoutes);
 
 app.listen(port, () =>
   console.log("> Server is up and running on port : " + port)

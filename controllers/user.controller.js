@@ -2,7 +2,7 @@ const userModel = require("../models/user.model");
 
 module.exports = {
   getAllUsers: async (req, res) => {
-    const users = userModel.getAllUsers();
+    const users = await userModel.getAllUsers();
     res.status(200).json({
       message: "Users",
       users,

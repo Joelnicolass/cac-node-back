@@ -1,4 +1,4 @@
-const database = require("../storages/index");
+/* const database = require("../storages/index");
 
 const userModel = {
   create: (user) => {
@@ -27,4 +27,51 @@ const userModel = {
   },
 };
 
-module.exports = userModel;
+module.exports = userModel; */
+
+const mongoose = require("mongoose");
+const User = require("../models/schemas/user.schema");
+
+module.exports = {
+  create: (user) => {
+    try {
+      const newUser = new User(user);
+      return newUser.save();
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
+  },
+  getUserByEmail: async (email) => {
+    try {
+      return await User.findOne({ email });
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
+  },
+  getAllUsers: async () => {
+    try {
+      return await User.find();
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
+  },
+  deleteById: async (id) => {
+    try {
+      return await User.findOneAndDelete({ _id: id });
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
+  },
+  updateById: async (id, user) => {
+    try {
+      return await User.findOneAndUpdate({ _id: id }, user);
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
+  },
+};

@@ -19,7 +19,7 @@ module.exports = {
 
     // consultar si existe el email
 
-    const emailExists = userModel.getUserByEmail(email);
+    const emailExists = await userModel.getUserByEmail(email);
     if (emailExists) {
       res.status(400).json({
         message: "Email already exists",
@@ -61,7 +61,7 @@ module.exports = {
 
     // validar si existe el usuario
 
-    const user = userModel.getUserByEmail(email);
+    const user = await userModel.getUserByEmail(email);
     if (!user) {
       res.status(400).json({
         message: "Invalid Email or Password",
@@ -101,6 +101,40 @@ module.exports = {
       message: "Login Successful",
       token,
     });
+    return;
+  },
+  unregister: async (req, res) => {
+    // validar que en el body exista el email
+    const { email, id } = req.body;
+
+    if (!email || !id) {
+      res.status(400).json({
+        message: "Internal error",
+      });
+      return;
+    }
+
+    // validar si existe el usuario
+
+    const user = await userModel.getUserByEmail(email);
+    if (!user) {
+      res.status(400).json({
+        message: "Invalid Email or Password",
+      });
+      return;
+    }
+
+    // eliminar usuario
+    const userDeleted = await userModel.deleteById(id);
+
+    if (!userDeleted) {
+      res.status(400).json({
+        message: "Error deleting user",
+      });
+      return;
+    }
+
+    res.status(200).json(userDeleted);
     return;
   },
 };
