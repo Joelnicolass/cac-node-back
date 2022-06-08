@@ -1,9 +1,15 @@
 const database = require("../storages/index");
+const User = require("./schemas/user.schema");
 
 const userModel = {
-  create: (user) => {
-    database.users.push(user);
-    return true;
+  create: async (user) => {
+    try {
+      const newUser = new User(user);
+      return await newUser.save();
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
   },
   findById: (id) => {
     return database.users.find((user) => user.id === id);

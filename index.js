@@ -9,13 +9,15 @@ const userRoutes = require("./routes/user.routes");
 const app = express();
 const port = 5000;
 
+require("./storages/connection");
+
 // middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/auth", authRoutes);
-app.use("/user", tokenValidator, userRoutes);
+app.use("/user", userRoutes);
 
 app.listen(port, () =>
   console.log("> Server is up and running on port : " + port)

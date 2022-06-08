@@ -19,7 +19,7 @@ module.exports = {
 
     // consultar si existe el email
 
-    const emailExists = userModel.getUserByEmail(email);
+    const emailExists = await userModel.getUserByEmail(email);
     if (emailExists) {
       res.status(400).json({
         message: "Email already exists",
@@ -40,7 +40,7 @@ module.exports = {
 
     // guardar en la base de datos
 
-    const userCreated = userModel.create(newUser);
+    const userCreated = await userModel.create(newUser);
 
     res.status(201).json({
       message: "User created",
@@ -61,7 +61,7 @@ module.exports = {
 
     // validar si existe el usuario
 
-    const user = userModel.getUserByEmail(email);
+    const user = await userModel.getUserByEmail(email);
     if (!user) {
       res.status(400).json({
         message: "Invalid Email or Password",
