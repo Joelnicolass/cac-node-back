@@ -1,9 +1,15 @@
 const database = require("../storages/index");
+const User = require("./schemas/user.schema");
 
 const userModel = {
-  create: (user) => {
-    database.users.push(user);
-    return true;
+  create: async (user) => {
+    try {
+      const newUser = new User(user);
+      return await newUser.save();
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
   },
   findById: (id) => {
     return database.users.find((user) => user.id === id);
@@ -21,9 +27,12 @@ const userModel = {
     const users = database.users;
     return users;
   },
-  getUserByEmail: (email) => {
-    const user = database.users.find((user) => user.email === email);
-    return user;
+  getUserByEmail: async (email) => {
+    try {
+      const user = await User.findOne({ email });
+    } catch (error) {
+      console.log(error);
+    }
   },
 };
 
