@@ -42,3 +42,7 @@ module.exports = {
 // token = req.headers["auth"];
 // jwt.verify(token, "SECRET")
 // jwt.sign({}, 'SECRET', {})
+
+function test() {
+  return true;
+}
