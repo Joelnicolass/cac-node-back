@@ -4,10 +4,9 @@ module.exports = {
   getAllUsers: async (req, res) => {
     const users = await userModel.getAllUsers();
     res.status(200).json({
-      message: "Users",
+      message: "Users retrieved",
       users,
     });
-    return;
   },
   getUserById: async (req, res) => {
     const { id } = req.params;
@@ -15,6 +14,15 @@ module.exports = {
     res.status(200).json({
       message: "User",
       user,
+    });
+    return;
+  },
+  getUserByIdWithProducts: async (req, res) => {
+    const { id } = req.params;
+    const userWithProducts = await userModel.getUserByIdWithProducts(id);
+    res.status(200).json({
+      message: "User with products",
+      userWithProducts,
     });
     return;
   },

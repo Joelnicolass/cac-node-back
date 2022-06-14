@@ -99,6 +99,10 @@ module.exports = {
     res.status(200).json({
       message: "Login Successful",
       token,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
     });
     return;
   },

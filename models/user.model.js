@@ -23,17 +23,48 @@ const userModel = {
     userToUpdate.password = user.password;
     return userToUpdate;
   },
-  getAllUsers: () => {
-    const users = database.users;
-    return users;
+  getAllUsers: async () => {
+    try {
+      return await User.find();
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
   },
   getUserByEmail: async (email) => {
     try {
       const user = await User.findOne({ email });
+      return user;
     } catch (error) {
       console.log(error);
     }
+    return null;
+  },
+  getUserByIdWithProducts: async (id) => {
+    try {
+      const userWithProducts = await User.findOne({ _id: id }).populate(
+        "products",
+        "name price -_id"
+      );
+      return userWithProducts;
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
   },
 };
 
 module.exports = userModel;
+
+User.findOneAndUpdate;
+
+/* 
+  create read update delete
+
+  post save
+  get find
+  get findOne
+  put findOneAndUpdate
+  delete findOneAndDelete
+
+*/
