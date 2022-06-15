@@ -62,6 +62,15 @@ const userModel = {
       console.log(error);
     }
   },
+  postImage: async (id, image) => {
+    try {
+      const user = await User.findByIdAndUpdate(id, { image });
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
+  },
 };
 
 module.exports = userModel;

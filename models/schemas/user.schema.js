@@ -17,6 +17,10 @@ const userSchema = new Schema({
       ref: "Product",
     },
   ],
+  image: {
+    type: String,
+    required: false,
+  },
 });
 
 module.exports = model("User", userSchema);
