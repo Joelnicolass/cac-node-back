@@ -11,17 +11,29 @@ const userModel = {
     }
     return null;
   },
-  findById: (id) => {
-    return database.users.find((user) => user.id === id);
+  findById: async (id) => {
+    try {
+      return await User.findById(id);
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
   },
-  deleteById: (id) => {
-    return (database.users = database.users.filter((user) => user.id !== id));
+  deleteById: async (id) => {
+    try {
+      return await User.findByIdAndDelete(id);
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
   },
-  updateById: (id, user) => {
-    const userToUpdate = database.users.find((user) => user.id === id);
-    userToUpdate.name = user.name;
-    userToUpdate.password = user.password;
-    return userToUpdate;
+  updateById: async (id, user) => {
+    try {
+      return await User.findByIdAndUpdate(id, user);
+    } catch (error) {
+      console.log(error);
+    }
+    return null;
   },
   getAllUsers: async () => {
     try {
@@ -43,20 +55,16 @@ const userModel = {
   getUserByIdWithProducts: async (id) => {
     try {
       const userWithProducts = await User.findOne({ _id: id }).populate(
-        "products",
-        "name price -_id"
+        "products"
       );
       return userWithProducts;
     } catch (error) {
       console.log(error);
     }
-    return null;
   },
 };
 
 module.exports = userModel;
-
-User.findOneAndUpdate;
 
 /* 
   create read update delete
@@ -64,7 +72,7 @@ User.findOneAndUpdate;
   post save
   get find
   get findOne
-  put findOneAndUpdate
+  put patch findOneAndUpdate
   delete findOneAndDelete
 
 */

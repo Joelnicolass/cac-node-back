@@ -19,11 +19,23 @@ module.exports = {
   },
   getUserByIdWithProducts: async (req, res) => {
     const { id } = req.params;
+
+    if (!id) {
+      res.status(400).json({
+        message: "Id is required",
+      });
+      return;
+    }
+
     const userWithProducts = await userModel.getUserByIdWithProducts(id);
-    res.status(200).json({
-      message: "User with products",
-      userWithProducts,
-    });
-    return;
+
+    if (!userWithProducts) {
+      res.status(404).json({
+        message: "User not found",
+      });
+      return;
+    }
+
+    res.status(200).json(userWithProducts);
   },
 };
