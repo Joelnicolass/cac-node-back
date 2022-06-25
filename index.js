@@ -5,6 +5,7 @@ const { tokenValidator, generateToken, encrypt, compare } = require("./utils");
 const userModel = require("./models/user.model");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
+const crudRoutes = require("./routes/crud.routes");
 
 const app = express();
 const port = 5000;
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
+app.use("/crud", crudRoutes);
 
 app.listen(port, () =>
   console.log("> Server is up and running on port : " + port)
